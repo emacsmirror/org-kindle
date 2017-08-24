@@ -1,0 +1,28 @@
+* Motivation
+
+Because I store ebooks in Org Wiki style database. All ebooks are organized (use
+=org-attach=) with links in Org-mode files under some kind of knowledge category
+structure directories. So I need to send an ebook to external device with one
+keybinding or one command instead of manually copy with complex path (=org-attach=
+use some kind of prefix for storing directory).
+
+
+* Intro
+
+Send org-mode ebook file: link to external devices with corresponding formats.
+
+* Features
+
+- auto send the file under org-mode ~file://~ link to your device like Kindle, NOOK etc.
+- auto convert to corresponding formats if necessary. Like send epub to Kindle
+  by auto converting to .mobi or .azw3 formats depending on your option
+  ~org-send-ebook-kindle-default-format~.
+
+* Usage
+
+You can bind command ~org-send-ebook~ to any keybinding.
+
+#+BEGIN_SRC emacs-lisp
+(define-key org-mode-map (kbd "<any keybinding you want>") 'org-send-ebook)
+#+END_SRC
+
