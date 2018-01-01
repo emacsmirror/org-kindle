@@ -17,8 +17,7 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
-(require 'cl-lib) ; for `case'
+(require 'cl-lib) ; for `cl-case'
 (require 'seq) ; for `seq-filter'
 (require 'org)
 
@@ -51,7 +50,7 @@
 
 (defun org-send-ebook--detect-format ()
   "Detect plugged in device's ebook format."
-  (case (intern (org-send-ebook--read-device-info))
+  (cl-case (intern (org-send-ebook--read-device-info))
     ('kindle ".mobi")
     (t org-send-ebook-default-format)))
 
@@ -62,7 +61,7 @@
 
 (defun org-send-ebook--detect-directory ()
   "Detect plugged in device directory of saving ebook."
-  (case (intern (org-send-ebook--read-device-info))
+  (cl-case (intern (org-send-ebook--read-device-info))
     ('kindle
      (concat (org-send-ebook--mount-path) "/Kindle/documents"))
     (t
