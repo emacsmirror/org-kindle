@@ -73,7 +73,7 @@
   (interactive)
   ;; get the file path under org-mode link.
   (when (string= (org-element-property :type (org-element-context)) "file")
-    (let* ((source-file (expand-file-name (url-unhex-string (org-element-property :path (org-element-context)))))
+    (let* ((source-file (expand-file-name (org-link-unescape (org-element-property :path (org-element-context)))))
            (target-file-name (file-name-nondirectory
                               (concat (file-name-sans-extension source-file) (org-send-ebook--detect-format))))
            (default-directory (temporary-file-directory))
