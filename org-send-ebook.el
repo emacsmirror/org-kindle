@@ -80,16 +80,23 @@
            (default-directory (temporary-file-directory))
            (target-file (concat (temporary-file-directory) target-file-name))
            (device-directory (org-send-ebook--detect-directory)))
-      (unless (string= (file-name-extension source-file) (file-name-extension target-file-name))
-        (make-process
-         :name (format "org-send-ebook: %s" target-file-name)
-         :command (list "ebook-convert" " " (shell-quote-argument source-file) " " (shell-quote-argument target-file))
-         :sentinel (lambda (proc event)
-                     ;; send converted file to device
-                     (when (string= event "finished\n")
-                       (copy-file target-file device-directory)
-                       (message (format "org-send-ebook: %s finished." target-file-name))))
-         :buffer (format "org-send-ebook: %s" target-file-name)))
+      (unless (file-exists-p (concat device-directory target-file-name))
+        (if (file-exists-p target-file) ; converted temp file exist, when previous convert failed.
+            (progn
+              (message "org-send-ebook: converted temp target file exist.")
+              (copy-file target-file device-directory)
+              (message (format "org-send-ebook: %s finished." target-file-name)))
+          ;; convert ebook to device compatible format.
+          (unless (string= (file-name-extension source-file) (file-name-extension target-file-name))
+            (make-process
+             :name (format "org-send-ebook: %s" target-file-name)
+             :command (list "ebook-convert" " " (shell-quote-argument source-file) " " (shell-quote-argument target-file))
+             :sentinel (lambda (proc event)
+                         ;; send converted file to device
+                         (when (string= event "finished\n")
+                           (copy-file target-file device-directory)
+                           (message (format "org-send-ebook: %s finished." target-file-name))))
+             :buffer (format "org-send-ebook: %s" target-file-name)))))
       )))
 
 
