@@ -80,11 +80,16 @@
            (default-directory (temporary-file-directory))
            (target-file (concat (temporary-file-directory) target-file-name))
            (device-directory (org-send-ebook--detect-directory)))
-      ;; convert ebook to device compatible format.
       (unless (string= (file-name-extension source-file) (file-name-extension target-file-name))
-        (shell-command (concat "ebook-convert" " " (shell-quote-argument source-file) " " (shell-quote-argument target-file))))
-      ;; send converted file to device
-      (copy-file target-file device-directory)
+        (make-process
+         :name (format "org-send-ebook: %s" target-file-name)
+         :command (list "ebook-convert" " " (shell-quote-argument source-file) " " (shell-quote-argument target-file))
+         :sentinel (lambda (proc event)
+                     ;; send converted file to device
+                     (when (string= event "finished\n")
+                       (copy-file target-file device-directory)
+                       (message (format "org-send-ebook: %s finished." target-file-name))))
+         :buffer (format "org-send-ebook: %s" target-file-name)))
       )))
 
 
