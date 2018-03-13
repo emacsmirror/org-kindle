@@ -63,7 +63,8 @@
   "Detect plugged in device directory of saving ebook."
   (cl-case (intern (org-send-ebook--read-device-info))
     ('kindle
-     (concat (org-send-ebook--mount-path) "/Kindle/documents"))
+     (expand-file-name
+      (concat (org-send-ebook--mount-path) "/Kindle/documents/")))
     (t
      (read-directory-name "Send to device directory: "))))
 
