@@ -1,7 +1,7 @@
 ;;; org-send-ebook.el --- Send org link file to ebook reader.
 
 ;; Authors: stardiviner <numbchild@gmail.com>
-;; Package-Requires: ((emacs "24.4") (cl-lib "0.5") (seq "2.20"))
+;; Package-Requires: ((emacs "25") (cl-lib "0.5") (seq "2.20"))
 ;; Package-Version: 0.1
 ;; Keywords: org link ebook kindle epub mobi
 ;; homepage: https://github.com/stardiviner/org-send-ebook
