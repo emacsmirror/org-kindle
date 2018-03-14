@@ -86,19 +86,24 @@
               (message "org-send-ebook: converted temp target file exist.")
               (copy-file target-file device-directory)
               (message (format "org-send-ebook: %s finished." target-file-name)))
-          ;; convert ebook to device compatible format.
-          (if (not (string= (file-name-extension source-file) (file-name-extension target-file-name)))
-              (make-process
-               :name (format "org-send-ebook: %s" target-file-name)
-               :command (list "ebook-convert" " " (shell-quote-argument source-file) " " (shell-quote-argument target-file))
-               :sentinel (lambda (proc event)
-                           ;; send converted file to device
-                           (when (string= event "finished\n")
-                             (copy-file target-file device-directory)
-                             (message (format "org-send-ebook: %s finished." target-file-name))))
-               :buffer (format "org-send-ebook: %s" target-file-name))
-            (copy-file source-file device-directory)
-            (message (format "org-send-ebook: %s finished." target-file-name)))))
+          ;; if converted temporary file exist, copy directly.
+          (if (string= (file-name-extension source-file) (file-name-extension target-file-name))
+              (progn
+                (copy-file source-file device-directory)
+                (message (format "org-send-ebook: %s finished." target-file-name)))
+            ;; convert ebook to device compatible format.
+            (message (format "org-send-ebook: %s started..." target-file-name))
+            (make-process
+             :name (format "org-send-ebook: %s" target-file-name)
+             ;; FIXME: fix on `shell-quote-argument'
+             :command (list "ebook-convert" " " (shell-quote-argument source-file) " " (shell-quote-argument target-file))
+             :sentinel (lambda (proc event)
+                         ;; send converted file to device
+                         (when (string= event "finished\n")
+                           (copy-file target-file device-directory)
+                           (message (format "org-send-ebook: %s finished." target-file-name))))
+             :buffer (format "*org-send-ebook: %s*" target-file-name))
+            )))
       )))
 
 
