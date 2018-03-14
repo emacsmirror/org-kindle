@@ -80,8 +80,10 @@
            (default-directory (temporary-file-directory))
            (target-file (concat (temporary-file-directory) target-file-name))
            (device-directory (org-send-ebook--detect-directory)))
+      ;; device already has this file.
       (unless (file-exists-p (concat device-directory target-file-name))
-        (if (file-exists-p target-file) ; converted temp file exist, when previous convert failed.
+        ;; converted temp file exist, when previous convert failed.
+        (if (file-exists-p target-file)
             (progn
               (message "org-send-ebook: converted temp target file exist.")
               (copy-file target-file device-directory)
@@ -98,9 +100,11 @@
              :command (list "ebook-convert" " " source-file " " target-file)
              :sentinel (lambda (proc event)
                          ;; send converted file to device
-                         (when (string= event "finished\n")
-                           (copy-file target-file device-directory)
-                           (message (format "org-send-ebook: %s finished." target-file-name))))
+                         (if (string= event "finished\n")
+                             (progn
+                               (copy-file target-file device-directory)
+                               (message (format "org-send-ebook: %s finished." target-file-name)))
+                           (user-error "Error on process: org-send-ebook")))
              :buffer (format "*org-send-ebook: %s*" target-file-name))
             )))
       )))
