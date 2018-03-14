@@ -95,8 +95,7 @@
             (message (format "org-send-ebook: %s started..." target-file-name))
             (make-process
              :name (format "org-send-ebook: %s" target-file-name)
-             ;; FIXME: fix on `shell-quote-argument'
-             :command (list "ebook-convert" " " (shell-quote-argument source-file) " " (shell-quote-argument target-file))
+             :command (list "ebook-convert" " " source-file " " target-file)
              :sentinel (lambda (proc event)
                          ;; send converted file to device
                          (when (string= event "finished\n")
