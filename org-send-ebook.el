@@ -81,15 +81,22 @@
            (target-file (concat (temporary-file-directory) target-file-name))
            (device-directory (org-send-ebook--detect-directory)))
       ;; device already has this file.
-      (unless (file-exists-p (concat device-directory target-file-name))
+      (unless (or (file-exists-p (concat device-directory target-file-name))
+                  (file-exists-p
+                   (concat
+                    device-directory
+                    (file-name-sans-extension target-file-name) ".azw3")))
         ;; converted temp file exist, when previous convert failed.
         (if (file-exists-p target-file)
             (progn
               (message "org-send-ebook: converted temp target file exist.")
               (copy-file target-file device-directory)
               (message (format "org-send-ebook: %s finished." target-file-name)))
-          ;; if converted temporary file exist, copy directly.
-          (if (string= (file-name-extension source-file) (file-name-extension target-file-name))
+          ;; if source file format is matched for device, copy directly.
+          (if (or (string= (file-name-extension source-file) (file-name-extension target-file-name))
+                  ;; if source file is .azw3, also suitable for Kindle.
+                  (if (equal (org-send-ebook--read-device-info) "kindle")
+                      (string= (file-name-extension source-file) "azw3")))
               (progn
                 (copy-file source-file device-directory)
                 (message (format "org-send-ebook: %s finished." target-file-name)))
