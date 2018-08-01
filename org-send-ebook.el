@@ -33,6 +33,7 @@
   :type 'string
   :group 'org-send-ebook)
 
+;;;###autoload
 (defun org-send-ebook--read-device-info ()
   "Detect plugged in device."
   ;; TODO: improve this function.
@@ -48,17 +49,20 @@
       (warn "unknown device, can't detect device correctly, please report to https://github.com/stardiviner/org-send-ebook/issues")
       "unknown")))
 
+;;;###autoload
 (defun org-send-ebook--detect-format ()
   "Detect plugged in device's ebook format."
   (cl-case (intern (org-send-ebook--read-device-info))
     ('kindle ".mobi")
     (t org-send-ebook-default-format)))
 
+;;;###autoload
 (defun org-send-ebook--mount-path ()
   "Get Linux general mount path."
   (directory-file-name
    (concat "/run/media/" (getenv "USER"))))
 
+;;;###autoload
 (defun org-send-ebook--detect-directory ()
   "Detect plugged in device directory of saving ebook."
   (cl-case (intern (org-send-ebook--read-device-info))
