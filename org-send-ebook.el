@@ -97,7 +97,8 @@
               (copy-file target-file device-directory)
               (message (format "org-send-ebook: %s finished." target-file-name)))
           ;; if source file format is matched for device, copy directly.
-          (if (or (string= (file-name-extension source-file) (file-name-extension target-file-name))
+          (if (or (string= (file-name-extension source-file)
+                           (file-name-extension target-file-name))
                   ;; if source file is .azw3, also suitable for Kindle.
                   (if (equal (org-send-ebook--read-device-info) "kindle")
                       (string= (file-name-extension source-file) "azw3")))
@@ -106,6 +107,12 @@
                 (message (format "org-send-ebook: %s finished." target-file-name)))
             ;; convert ebook to device compatible format.
             (message (format "org-send-ebook: %s started..." target-file-name))
+            ;; (shell-command
+            ;;  (concat "ebook-convert"
+            ;;          " "
+            ;;          (shell-quote-argument source-file)
+            ;;          " "
+            ;;          (shell-quote-argument target-file)))
             (make-process
              :name (format "org-send-ebook: %s" target-file-name)
              :command (list "ebook-convert" " " source-file " " target-file)
@@ -114,11 +121,10 @@
                          (if (string= event "finished\n")
                              (progn
                                (copy-file target-file device-directory)
-                               (message (format "org-send-ebook: %s finished." target-file-name)))
-                           (user-error "Error on process: org-send-ebook")))
-             :buffer (format "*org-send-ebook: %s*" target-file-name))
-            )))
-      )))
+                               (message "org-send-ebook: %s finished." target-file-name))
+                           (user-error "Error on process: org-send-ebook.\n%S" event)))
+             :buffer (format "*org-send-ebook: %s*" target-file-name)
+             )))))))
 
 
 
