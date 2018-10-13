@@ -20,6 +20,7 @@
 (require 'cl-lib) ; for `cl-case'
 (require 'seq) ; for `seq-filter'
 (require 'org)
+(require 'dash) ; for `->>'
 
 (defgroup org-send-ebook nil
   "Send org-mode ebook file: link to external devices with corresponding formats.."
@@ -72,6 +73,12 @@
     (t
      (read-directory-name "Send to device directory: "))))
 
+(defun org-send-ebook--strim-special-chars (filename)
+  "strim some special characters in filename which does not
+    supported by Kindle filesystem."
+  (->> filename
+       (replace-regexp-in-string ":" "-")))
+
 ;;;###autoload
 (defun org-send-ebook ()
   "Send `org-mode' ebook file: link to external devices with corresponding formats."
@@ -82,7 +89,8 @@
            (target-file-name (file-name-nondirectory
                               (concat (file-name-sans-extension source-file) (org-send-ebook--detect-format))))
            (default-directory (temporary-file-directory))
-           (target-file (concat (temporary-file-directory) target-file-name))
+           (target-file (org-send-ebook--strim-special-chars
+                         (concat (temporary-file-directory) target-file-name)))
            (device-directory (org-send-ebook--detect-directory)))
       ;; device already has this file.
       (unless (or (file-exists-p (concat device-directory target-file-name))
