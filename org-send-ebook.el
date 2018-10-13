@@ -115,24 +115,34 @@
                 (message (format "org-send-ebook: %s finished." target-file-name)))
             ;; convert ebook to device compatible format.
             (message (format "org-send-ebook: %s started..." target-file-name))
-            ;; (shell-command
-            ;;  (concat "ebook-convert"
-            ;;          " "
-            ;;          (shell-quote-argument source-file)
-            ;;          " "
-            ;;          (shell-quote-argument target-file)))
-            (make-process
-             :name (format "org-send-ebook: %s" target-file-name)
-             :command (list "ebook-convert" " " source-file " " target-file)
-             :sentinel (lambda (proc event)
-                         ;; send converted file to device
-                         (if (string= event "finished\n")
-                             (progn
-                               (copy-file target-file device-directory)
-                               (message "org-send-ebook: %s finished." target-file-name))
-                           (user-error "Error on process: org-send-ebook.\n%S" event)))
-             :buffer (format "*org-send-ebook: %s*" target-file-name)
-             )))))))
+
+            (async-shell-command
+             (concat "ebook-convert"
+                     " " (shell-quote-argument source-file)
+                     " " (shell-quote-argument target-file) " ; "
+                     "cp"
+                     " " (shell-quote-argument target-file)
+                     " " device-directory)
+             (format "*org-send-ebook: %s*" target-file-name)
+             (format "*Error org-send-ebook: %s*" target-file-name))
+
+            ;; FIXME:
+            ;; (make-process
+            ;;  :name (format "org-send-ebook: %s" target-file-name)
+            ;;  :command (list
+            ;;            "ebook-convert" " "
+            ;;            (shell-quote-argument source-file) " "
+            ;;            (shell-quote-argument target-file))
+            ;;  :sentinel (lambda (proc event)
+            ;;              ;; send converted file to device
+            ;;              (if (string= event "finished\n")
+            ;;                  (progn
+            ;;                    (copy-file target-file device-directory)
+            ;;                    (message "org-send-ebook: %s finished." target-file-name))
+            ;;                (user-error "Error on process: org-send-ebook.\n%S" event)))
+            ;;  :buffer (format "*org-send-ebook: %s*" target-file-name))
+            
+            ))))))
 
 
 
