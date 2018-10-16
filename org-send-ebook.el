@@ -86,11 +86,11 @@
   ;; get the file path under org-mode link.
   (when (string= (org-element-property :type (org-element-context)) "file")
     (let* ((source-file (expand-file-name (org-link-unescape (org-element-property :path (org-element-context)))))
-           (target-file-name (file-name-nondirectory
-                              (concat (file-name-sans-extension source-file) (org-send-ebook--detect-format))))
+           (target-file-name (org-send-ebook--strim-special-chars
+                              (file-name-nondirectory
+                               (concat (file-name-sans-extension source-file) (org-send-ebook--detect-format)))))
            (default-directory (temporary-file-directory))
-           (target-file (org-send-ebook--strim-special-chars
-                         (concat (temporary-file-directory) target-file-name)))
+           (target-file (concat (temporary-file-directory) target-file-name))
            (device-directory (org-send-ebook--detect-directory)))
       ;; device already has this file.
       (unless (or (file-exists-p (concat device-directory target-file-name))
