@@ -1,3 +1,11 @@
+* What it is?
+
+#+ATTR_ORG: :width 600
+#+ATTR_LATEX: :width 6.0in
+#+ATTR_HTML: :width 600px
+[[file:org-kindle.png]]
+
+
 * Motivation
 
 Because I store ebooks in Org Wiki style database. All ebooks are organized (use
