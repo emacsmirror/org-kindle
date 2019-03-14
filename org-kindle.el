@@ -82,8 +82,13 @@
 ;;;###autoload
 (defun org-kindle--mount-path ()
   "Get Linux general mount path."
-  (directory-file-name
-   (concat "/run/media/" (getenv "USER"))))
+  (cl-case system-type
+    ('gnu/linux
+     (directory-file-name (concat "/run/media/" (getenv "USER"))))
+    ('darwin ; TODO:
+     )
+    ('windows-nt ; TODO:
+     )))
 
 ;;;###autoload
 (defun org-kindle--detect-directory ()
