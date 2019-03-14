@@ -49,6 +49,14 @@
   :prefix "org-kindle-"
   :group 'org)
 
+(defvar org-kindle-supported-devices-alist
+  '(:kindle (:name "Kindle" :device-name "Amazon Kindle"
+                   :documents-path "/Kindle/documents/")
+            :nook (:name "Nook" :device-name "Nook"
+                         :documents-path "" ; FIXME:
+                         ))
+  "Alist of package supported devices.")
+
 (defvar org-kindle-target-format nil)
 
 (defcustom org-kindle-default-format ".epub"
@@ -58,25 +66,27 @@
 
 ;;;###autoload
 (defun org-kindle--read-device-info ()
-  "Detect plugged in device."
-  ;; TODO: improve this function.
-  (if (seq-filter
-       (lambda (usb)
-         ;; if USB contains "Amazon Kindle" string.
-         (string-match (rx "Amazon Kindle") usb)
-         )
-       ;; read USB devices info
-       (split-string (shell-command-to-string "lsusb") "\n"))
-      "kindle"
-    (progn
-      (warn "unknown device, can't detect device correctly, please report to https://github.com/stardiviner/org-kindle/issues")
-      "unknown")))
+  "Match name in shell command lsusb listed out devices."
+  (cond
+   ((seq-filter
+     (lambda (usb)
+       (string-match (rx "Amazon Kindle") usb))
+     (split-string (shell-command-to-string "lsusb") "\n")) "kindle")
+   ((seq-filter
+     (lambda (usb)
+       (string-match (rx "Nook") usb))
+     (split-string (shell-command-to-string "lsusb") "\n")) "nook")
+   (progn
+     (warn "unknown device, can't detect device correctly,\n
+please report to https://github.com/stardiviner/org-kindle/issues")
+     "unknown")))
 
 ;;;###autoload
 (defun org-kindle--detect-format ()
   "Detect plugged in device's ebook format."
   (cl-case (intern (org-kindle--read-device-info))
     ('kindle ".mobi")
+    ('nook ".epub")
     (t org-kindle-default-format)))
 
 ;;;###autoload
@@ -96,7 +106,9 @@
   (cl-case (intern (org-kindle--read-device-info))
     ('kindle
      (expand-file-name
-      (concat (org-kindle--mount-path) "/Kindle/documents/")))
+      (concat (org-kindle--mount-path)
+              (plist-get (plist-get org-kindle-supported-devices-alist :kindle)
+                         :documents-path))))
     (t
      (read-directory-name "Send to device directory: "))))
 
