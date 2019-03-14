@@ -19,8 +19,17 @@ use some kind of prefix for storing directory).
 
 - auto send the file under org-mode ~file://~ link to your external devices like
   Kindle, NOOK etc with corresponding formats.
-  - auto convert to corresponding formats if necessary. Like send epub to Kindle
-    by auto converting to .mobi or .azw3 formats depending on your option
+  - auto convert to corresponding formats if necessary. Like send =.epub= to
+    Kindle by auto converting to =.mobi= or =.azw3= formats depending on your option
     ~org-send-ebook-kindle-default-format~.
-- One command =org-kindle-sync-notes= to sync Kindle's notes with Org Mode notes file.
+
+* Todos
+
+- [ ] One command =org-kindle-sync-notes= to sync Kindle's notes with Org Mode notes file.
+
+* Notices
+
+In theatrically, this package should work for non-kindle ereaders too. User can
+set device path in variables. But becaused not tested, so I can't guarantee that
+package will work correctly. But PR welcome to improve it. I appreciate it.
 

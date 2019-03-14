@@ -10,6 +10,18 @@
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
+;;;
+;; This is package makes an Emacs bridge between Kindle (other ereaders
+;; supports could work in theoretically) and Org Mode.
+;; In theatrically, this package should work for non-kindle ereaders too. User can
+;; set device path in variables. But becaused not tested, so I can't guarantee that
+;; package will work correctly. But PR welcome to improve it. I appreciate it.
+;;
+;; - It support send Org Mode file: link file to Kindle or other ereaders like Nook.
+
+;;; Todos:
+;;
+;; - Support sync Kindle notes with Org Mode notes file.
 
 ;; Usage:
 ;;
