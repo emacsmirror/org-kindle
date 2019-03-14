@@ -112,7 +112,13 @@ please report to https://github.com/stardiviner/org-kindle/issues")
     (t
      (read-directory-name "Send to device directory: "))))
 
-(defun org-kindle--strim-special-chars (filename)
+(defun org-kindle--file-name-escape-special-chars (filename)
+  "Escape special characters like : in filename which invalid in copying filename."
+  (->> filename
+       (replace-regexp-in-string ":" "\\\\:")
+       (replace-regexp-in-string " " "\\\\ ")))
+
+(defun org-kindle--file-name-strim-special-chars (filename)
   "strim some special characters in filename which does not
     supported by Kindle filesystem."
   (->> filename
@@ -125,11 +131,12 @@ please report to https://github.com/stardiviner/org-kindle/issues")
   ;; get the file path under org-mode link.
   (when (string= (org-element-property :type (org-element-context)) "file")
     (let* ((source-file (expand-file-name (org-link-unescape (org-element-property :path (org-element-context)))))
-           (target-file-name (org-kindle--strim-special-chars
+           (target-file-name (org-kindle--file-name-strim-special-chars
                               (file-name-nondirectory
-                               (concat (file-name-sans-extension source-file) (org-kindle--detect-format)))))
+                               (concat (file-name-sans-extension source-file)
+                                       (org-kindle--detect-format)))))
            (default-directory (temporary-file-directory))
-           (target-file (concat (temporary-file-directory) target-file-name))
+           (convert-temp-file (concat (temporary-file-directory) target-file-name))
            (device-directory (org-kindle--detect-directory)))
       ;; device already has this file.
       (unless (or (file-exists-p (concat device-directory target-file-name))
@@ -138,10 +145,10 @@ please report to https://github.com/stardiviner/org-kindle/issues")
                     device-directory
                     (file-name-sans-extension target-file-name) ".azw3")))
         ;; converted temp file exist, when previous convert failed.
-        (if (file-exists-p target-file)
+        (if (file-exists-p convert-temp-file)
             (progn
               (message "org-kindle: converted temp target file exist.")
-              (copy-file target-file device-directory)
+              (copy-file convert-temp-file device-directory)
               (message (format "org-kindle: %s finished." target-file-name)))
           ;; if source file format is matched for device, copy directly.
           (if (or (string= (file-name-extension source-file)
@@ -150,7 +157,8 @@ please report to https://github.com/stardiviner/org-kindle/issues")
                   (if (equal (org-kindle--read-device-info) "kindle")
                       (string= (file-name-extension source-file) "azw3")))
               (progn
-                (copy-file source-file device-directory)
+                (copy-file (format "%s" source-file) ; fix filename special characters like : etc in format.
+                           (concat device-directory target-file-name))
                 (message (format "org-kindle: %s finished." target-file-name)))
             ;; convert ebook to device compatible format.
             (message (format "org-kindle: %s started..." target-file-name))
@@ -158,9 +166,9 @@ please report to https://github.com/stardiviner/org-kindle/issues")
             (async-shell-command
              (concat "ebook-convert"
                      " " (shell-quote-argument source-file)
-                     " " (shell-quote-argument target-file) " ; "
+                     " " (shell-quote-argument convert-temp-file) " ; "
                      "cp"
-                     " " (shell-quote-argument target-file)
+                     " " (shell-quote-argument convert-temp-file)
                      " " device-directory)
              (format "*org-kindle: %s*" target-file-name)
              (format "*Error org-kindle: %s*" target-file-name))
@@ -171,12 +179,12 @@ please report to https://github.com/stardiviner/org-kindle/issues")
             ;;  :command (list
             ;;            "ebook-convert" " "
             ;;            (shell-quote-argument source-file) " "
-            ;;            (shell-quote-argument target-file))
+            ;;            (shell-quote-argument convert-temp-file))
             ;;  :sentinel (lambda (proc event)
             ;;              ;; send converted file to device
             ;;              (if (string= event "finished\n")
             ;;                  (progn
-            ;;                    (copy-file target-file device-directory)
+            ;;                    (copy-file convert-temp-file device-directory)
             ;;                    (message "org-kindle: %s finished." target-file-name))
             ;;                (user-error "Error on process: org-kindle.\n%S" event)))
             ;;  :buffer (format "*org-kindle: %s*" target-file-name))
