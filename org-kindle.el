@@ -76,10 +76,11 @@
      (lambda (usb)
        (string-match (rx "Nook") usb))
      (split-string (shell-command-to-string "lsusb") "\n")) "nook")
-   (progn
-     (warn "unknown device, can't detect device correctly,\n
+   (t
+    (progn
+      (warn "unknown device, can't detect device correctly,\n
 please report to https://github.com/stardiviner/org-kindle/issues")
-     "unknown")))
+      "unknown"))))
 
 ;;;###autoload
 (defun org-kindle--detect-format ()
