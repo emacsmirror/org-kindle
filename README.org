@@ -15,6 +15,12 @@ keybinding or one command instead of manually copy with complex path (=org-attac
 use some kind of prefix for storing directory).
 
 
+* External Dependencies
+
+This packages use a command =ebook-convert= which comes from [[https://calibre-ebook.com/][Calibre]]. So if you
+want to use auto convert functionality, you need to install it manuall.
+
+
 * Features
 
 - auto send the file under org-mode ~file://~ link to your external devices like
