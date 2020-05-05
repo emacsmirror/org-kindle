@@ -167,7 +167,7 @@ please report to https://github.com/stardiviner/org-kindle/issues")
                 (message (format "org-kindle: %s finished." target-file-name)))
             ;; convert ebook to device compatible format.
             (message (format "org-kindle: %s started..." target-file-name))
-
+            ;; actually process to convert ebook
             (async-shell-command
              (concat "ebook-convert"
                      " " (shell-quote-argument source-file)
@@ -177,6 +177,10 @@ please report to https://github.com/stardiviner/org-kindle/issues")
                      " " device-directory)
              (format "*org-kindle: %s*" target-file-name)
              (format "*Error org-kindle: %s*" target-file-name))
+            ;; write converted target file path to process output buffer.
+            (with-current-buffer (format "*org-kindle: %s*" target-file-name)
+              (goto-char (point-max))
+              (insert (format "%s" (concat device-directory target-file-name))))
 
             ;; FIXME:
             ;; (make-process
