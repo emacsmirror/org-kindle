@@ -46,6 +46,7 @@
 (require 'cl-lib) ; for `cl-case'
 (require 'seq) ; for `seq-filter'
 (require 'org)
+(require 'org-element)
 (require 'dash) ; for `->>'
 
 (defgroup org-kindle nil
