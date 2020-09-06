@@ -3,7 +3,7 @@
 ;; Authors: stardiviner <numbchild@gmail.com>
 ;; Package-Requires: ((emacs "25") (cl-lib "0.5") (seq "2.20"))
 ;; Package-Version: 0.1
-;; Keywords: org link ebook kindle epub mobi
+;; Keywords: org link ebook kindle epub azw3 mobi
 ;; homepage: https://github.com/stardiviner/org-kindle
 
 ;; org-kindle is free software; you can redistribute it and/or modify it
@@ -90,7 +90,7 @@ please report to https://github.com/stardiviner/org-kindle/issues")
 (defun org-kindle--detect-format ()
   "Detect plugged in device's ebook format."
   (cl-case (intern (org-kindle--read-device-info))
-    ('kindle ".mobi")
+    ('kindle ".azw3")
     ('nook ".epub")
     (t org-kindle-default-format)))
 
